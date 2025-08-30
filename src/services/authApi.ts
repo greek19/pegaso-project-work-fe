@@ -1,13 +1,45 @@
-import axios from "axios";
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-const API_URL = "http://localhost:4000/api/auth";
+interface LoginRequest {
+    username: string;
+    password: string;
+}
 
-export const login = async (username: string, password: string) => {
-    const response = await axios.post(`${API_URL}/login`, { username, password });
-    return response.data;
-};
+interface LoginResponse {
+    token: string;
+}
 
-export const register = async (username: string, password: string) => {
-    const response = await axios.post(`${API_URL}/register`, { username, password });
-    return response.data;
-};
+interface RegisterRequest {
+    username: string;
+    password: string;
+}
+
+interface RegisterResponse {
+    message: string;
+}
+
+export const authApi = createApi({
+    reducerPath: "authApi",
+    baseQuery: fetchBaseQuery({
+        baseUrl: "http://localhost:4000/api/auth",
+        credentials: "include",
+    }),
+    endpoints: (builder) => ({
+        login: builder.mutation<LoginResponse, LoginRequest>({
+            query: (credentials) => ({
+                url: "/login",
+                method: "POST",
+                body: credentials,
+            }),
+        }),
+        register: builder.mutation<RegisterResponse, RegisterRequest>({
+            query: (user) => ({
+                url: "/register",
+                method: "POST",
+                body: user,
+            }),
+        }),
+    }),
+});
+
+export const { useLoginMutation, useRegisterMutation } = authApi;

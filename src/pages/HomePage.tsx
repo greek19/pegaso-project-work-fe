@@ -1,21 +1,76 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { useSelector } from "react-redux";
+import type { RootState } from "../store/store";
+import { useGetSaldoQuery, useGetUltimiMovimentiQuery } from "../services/accountApi";
+import "../assets/style/card.css";
 
 export default function HomePage() {
-    return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
-            <h1 className="text-3xl font-bold mb-4">Benvenuto nella Home</h1>
-            <p className="text-gray-600 mb-6">Questa è la tua home page React + Redux + TS.</p>
+    const username = useSelector((state: RootState) => state.auth.username);
+    const [showSaldo, setShowSaldo] = useState(true);
 
-            <div className="flex gap-4">
-                <Link
-                    to="/login"
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-                >
-                    Vai al Login
-                </Link>
-                <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
-                    Azione Demo
-                </button>
+    const { data: saldo, isLoading: saldoLoading } = useGetSaldoQuery();
+    const { data: movimenti, isLoading: movimentiLoading } = useGetUltimiMovimentiQuery(10);
+
+    return (
+        <div className="container mt-4">
+            <div className="cardInfo shadow-sm mb-4">
+                <div className="card-img"></div>
+                <div className="card-info row">
+                    <div className="card-text col-10">
+                        <h2 className="text-title">Ciao, {username}</h2>
+                        <p className="text-subtitle">Saldo disponibile:</p>
+                        <h3 className="text-white">
+                            {saldoLoading
+                                ? "Caricamento..."
+                                : showSaldo
+                                    ? `€ ${saldo?.toFixed(2)}`
+                                    : "••••••"}
+                        </h3>
+                    </div>
+                    <div className="col-2 d-flex align-items-start justify-content-end">
+                        <button
+                            className="btn btn-link text-white p-0"
+                            onClick={() => setShowSaldo(!showSaldo)}
+                            aria-label="Mostra/Nascondi saldo"
+                        >
+                            <i className={`bi ${showSaldo ? "bi-eye-slash-fill" : "bi-eye-fill"} fs-3`}></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div className="card shadow-sm">
+                <div className="card-header bg-dark text-white">Ultimi movimenti</div>
+                <div className="card-body p-0">
+                    {movimentiLoading ? (
+                        <p className="p-3">Caricamento...</p>
+                    ) : (
+                        <table className="table mb-0">
+                            <thead className="table-light">
+                            <tr>
+                                <th scope="col">Data</th>
+                                <th scope="col">Descrizione</th>
+                                <th scope="col" className="text-end">
+                                    Importo
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {movimenti?.map((m) => (
+                                <tr key={m.id}>
+                                    <td>{m.data}</td>
+                                    <td>{m.descrizione}</td>
+                                    <td
+                                        className={`text-end ${m.importo < 0 ? "text-danger" : "text-success"}`}
+                                    >
+                                        {m.importo < 0 ? "-" : "+"}€ {Math.abs(m.importo).toFixed(2)}
+                                    </td>
+                                </tr>
+                            ))}
+                            </tbody>
+                        </table>
+                    )}
+                </div>
             </div>
         </div>
     );
