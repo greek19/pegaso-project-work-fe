@@ -33,6 +33,11 @@ export default function Header() {
                                     Movimenti
                                 </Link>
                             </li>
+                            <li className="nav-item">
+                                <Link className="nav-link" to="/operazioni">
+                                    Operazioni
+                                </Link>
+                            </li>
                         </ul>
                     </div>
                 </div>

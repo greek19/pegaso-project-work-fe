@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import type { RootState } from "../store/store";
 import Layout from "../components/Layout/Layout";
 import HomePage from "../pages/HomePage";
+import Operazioni from "../pages/Operazioni.tsx";
 
 export default function AppRouter() {
     const token = useSelector((state: RootState) => state.auth.token);
@@ -27,6 +28,7 @@ export default function AppRouter() {
                 >
                     <Route index element={<HomePage />} />
                     <Route path="movimenti" element={<p > Movimenti page </p>} />
+                    <Route path="operazioni" element={<Operazioni />} />
                 </Route>
 
                 <Route path="*" element={<Navigate to="/" replace />} />
