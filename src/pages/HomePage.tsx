@@ -23,7 +23,7 @@ export default function HomePage() {
                             {saldoLoading
                                 ? "Caricamento..."
                                 : showSaldo
-                                    ? `€ ${saldo?.toFixed(2)}`
+                                    ? `€ ${saldo?.saldo?.toFixed(2)}`
                                     : "••••••"}
                         </h3>
                     </div>

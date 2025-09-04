@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type { BaseQueryFn, FetchArgs, FetchBaseQueryError } from "@reduxjs/toolkit/query";
-import { logout } from "../features/auth/authSlice"; // per svuotare redux e token
+import { logout } from "../features/auth/authSlice";
 import type { RootState } from "../store/store";
 
 export interface Movimento {
@@ -42,7 +42,7 @@ export const accountApi = createApi({
     reducerPath: "accountApi",
     baseQuery: baseQueryWithAuth,
     endpoints: (builder) => ({
-        getSaldo: builder.query<number, void>({
+        getSaldo: builder.query<{saldo: number}, void>({
             query: () => "/saldo",
         }),
         getUltimiMovimenti: builder.query<Movimento[], number | void>({

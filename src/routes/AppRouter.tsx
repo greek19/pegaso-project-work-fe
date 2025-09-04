@@ -6,6 +6,9 @@ import type { RootState } from "../store/store";
 import Layout from "../components/Layout/Layout";
 import HomePage from "../pages/HomePage";
 import Operazioni from "../pages/Operazioni.tsx";
+import FondiPage from "../pages/FondiPage.tsx";
+import PrestitiPage from "../pages/PrestitiPage.tsx";
+import PolizzePage from "../pages/PolizzePage.tsx";
 
 export default function AppRouter() {
     const token = useSelector((state: RootState) => state.auth.token);
@@ -29,6 +32,9 @@ export default function AppRouter() {
                     <Route index element={<HomePage />} />
                     <Route path="movimenti" element={<p > Movimenti page </p>} />
                     <Route path="operazioni" element={<Operazioni />} />
+                    <Route path="fondi" element={<FondiPage />} />
+                    <Route path="prestiti" element={<PrestitiPage />} />
+                    <Route path="polizze" element={<PolizzePage />} />
                 </Route>
 
                 <Route path="*" element={<Navigate to="/" replace />} />

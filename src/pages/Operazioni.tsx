@@ -1,23 +1,31 @@
-import {use, useState} from "react";
+import { useState } from "react";
 import GenericModal from "../components/modals/GenericModal";
-import {Button} from "react-bootstrap";
-import {useCreateBonificoMutation} from "../services/accountApi.ts";
+import { Button } from "react-bootstrap";
+import { useCreateBonificoMutation } from "../services/accountApi";
+import { useNavigate } from "react-router-dom";
 
+type ModalField =
+    | { label: string; type: "text"; state: string; setState: React.Dispatch<React.SetStateAction<string>> }
+    | { label: string; type: "number"; state: number; setState: React.Dispatch<React.SetStateAction<number>> };
+
+interface Operazione {
+    title: string;
+    description: string;
+    modalFields?: ModalField[];
+    action?: () => void;
+    show?: boolean;
+    setShow?: React.Dispatch<React.SetStateAction<boolean>>;
+    confirmText?: string;
+    isRedirect?: boolean;
+    redirectTo?: string;
+}
 
 export default function Operazioni() {
+    const navigate = useNavigate();
+
     const [showBonifico, setShowBonifico] = useState(false);
-    const [showInvestimento, setShowInvestimento] = useState(false);
-    const [showPrestito, setShowPrestito] = useState(false);
-    const [showPolizza, setShowPolizza] = useState(false);
 
     const [beneficiario, setBeneficiario] = useState("");
-    const [investImporto, setInvestImporto] = useState(0);
-    const [investPeriodo,setInvestPeriodo] =useState(0);
-    const [prestitoImporto, setPrestitoImporto] = useState(0);
-    const [prestitoDurata, setPrestitoDurata] = useState(0);
-    const [polizzaTipo, setPolizzaTipo] = useState(0);
-    const [polizzaImporto, setPolizzaImporto] = useState(0);
-
     const [iban, setIban] = useState("");
     const [importo, setImporto] = useState(0);
     const [causale, setCausale] = useState("");
@@ -29,15 +37,13 @@ export default function Operazioni() {
             await createBonifico({ beneficiario, iban, importo, causale }).unwrap();
             alert("Bonifico effettuato!");
             setShowBonifico(false);
-        } catch (err) {
+        } catch {
             alert("Errore durante il bonifico");
         }
-    }
-    const handleInvestimento = async () => { /* calcolo simulazione */ }
-    const handlePrestito = async () => { /* richiesta prestito */ }
-    const handlePolizza = async () => { /* aggiornamento polizza */ }
+    };
 
-    const operazioni = [
+
+    const operazioni: Operazione[] = [
         {
             title: "Bonifico",
             description: "Effettua un bonifico verso un altro conto.",
@@ -50,82 +56,82 @@ export default function Operazioni() {
             action: handleBonifico,
             show: showBonifico,
             setShow: setShowBonifico,
-            confirmText: "Invia"
+            confirmText: "Invia",
         },
         {
-            title: "Simulazione investimenti",
-            description: "Simula i rendimenti dei tuoi investimenti.",
-            modalFields: [
-                { label: "Importo", type: "number", state: investImporto, setState: setInvestImporto },
-                { label: "Periodo (mesi)", type: "number", state: investPeriodo, setState: setInvestPeriodo },
-            ],
-            action: handleInvestimento,
-            show: showInvestimento,
-            setShow: setShowInvestimento,
-            confirmText: "Simula"
+            title: "Fondi di investimento",
+            description: "Scopri i fondi selezionati dal nostro team.",
+            isRedirect: true,
+            redirectTo: "/fondi",
         },
         {
             title: "Richiesta prestito",
             description: "Richiedi un prestito personale.",
-            modalFields: [
-                { label: "Importo", type: "number", state: prestitoImporto, setState: setPrestitoImporto },
-                { label: "Durata (mesi)", type: "number", state: prestitoDurata, setState: setPrestitoDurata },
-            ],
-            action: handlePrestito,
-            show: showPrestito,
-            setShow: setShowPrestito,
-            confirmText: "Invia"
+            isRedirect: true,
+            redirectTo: "/prestiti",
         },
         {
-            title: "Gestione polizze assicurative",
-            description: "Visualizza e aggiorna le tue polizze.",
-            modalFields: [
-                { label: "Tipo polizza", type: "text", state: polizzaTipo, setState: setPolizzaTipo },
-                { label: "Importo premio", type: "number", state: polizzaImporto, setState: setPolizzaImporto },
-            ],
-            action: handlePolizza,
-            show: showPolizza,
-            setShow: setShowPolizza,
-            confirmText: "Aggiorna"
-        },
+            title: "Polizze assicurative",
+            description: "Richiedi un prestito personale.",
+            isRedirect: true,
+            redirectTo: "/polizze",
+        }
     ];
 
     return (
         <div className="row g-4">
+            <h2>Lista operazioni</h2>
             {operazioni.map((op, idx) => (
                 <div key={idx} className="col-md-4">
                     <div className="card shadow-sm h-100">
                         <div className="card-body d-flex flex-column justify-content-between">
                             <h5 className="card-title">{op.title}</h5>
                             <p className="card-text">{op.description}</p>
-                            <Button variant="primary" onClick={() => op.setShow(true)}>Avvia</Button>
+
+                            {op.isRedirect ? (
+                                <Button variant="primary" onClick={() => navigate(op.redirectTo!)}>
+                                    Vai
+                                </Button>
+                            ) : (
+                                op.setShow && <Button variant="primary" onClick={() => op.setShow!(true)}>Avvia</Button>
+                            )}
                         </div>
                     </div>
 
-                    <GenericModal
-                        show={op.show}
-                        title={op.title}
-                        onClose={() => op.setShow(false)}
-                        onConfirm={op.action}
-                        confirmText={op.confirmText}
-                    >
-                        <form>
-                            {op.modalFields.map((field, i) => (
-                                <div key={i} className="mb-3">
-                                    <label className="form-label">{field.label}</label>
-                                    <input
-                                        type={field.type}
-                                        className="form-control"
-                                        value={field.state}
-                                        onChange={(e) => field.setState(field.type === "number" ? Number(e.target.value) : e.target.value)}
-                                    />
-                                </div>
-                            ))}
-                        </form>
-                    </GenericModal>
+                    {op.modalFields && op.setShow && (
+                        <GenericModal
+                            show={op.show!}
+                            title={op.title}
+                            onClose={() => op.setShow!(false)}
+                            onConfirm={op.action}
+                            confirmText={op.confirmText}
+                        >
+                            <form>
+                                {op.modalFields.map((field, i) => (
+                                    <div key={i} className="mb-3">
+                                        <label className="form-label">{field.label}</label>
+                                        {field.type === "number" ? (
+                                            <input
+                                                type="number"
+                                                className="form-control"
+                                                value={field.state}
+                                                onChange={(e) => field.setState(Number(e.target.value))}
+                                            />
+                                        ) : (
+                                            <input
+                                                type="text"
+                                                className="form-control"
+                                                value={field.state}
+                                                onChange={(e) => field.setState(e.target.value)}
+                                            />
+                                        )}
+                                    </div>
+                                ))}
+                            </form>
+                        </GenericModal>
+                    )}
                 </div>
             ))}
         </div>
-
     );
 }
