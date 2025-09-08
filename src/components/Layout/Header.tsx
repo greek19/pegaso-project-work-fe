@@ -1,6 +1,24 @@
-import { Link } from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
+import {useDispatch} from "react-redux";
+import {useLogoutMutation} from "../../services/authApi.ts";
+import { logout as logoutAction } from "../../features/auth/authSlice";
 
 export default function Header() {
+    const [logoutApi] = useLogoutMutation();
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const handleLogout = async () => {
+        try {
+            await logoutApi().unwrap();
+        } catch (err) {
+            console.error("Errore durante il logout", err);
+        } finally {
+            dispatch(logoutAction());
+            navigate("/login");
+        }
+    };
+
     return (
         <header>
             <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -37,6 +55,11 @@ export default function Header() {
                                 <Link className="nav-link" to="/operazioni">
                                     Operazioni
                                 </Link>
+                            </li>
+                            <li className="nav-item">
+                                <button className="btn btn-outline-light ms-2" onClick={handleLogout}>
+                                    Logout
+                                </button>
                             </li>
                         </ul>
                     </div>

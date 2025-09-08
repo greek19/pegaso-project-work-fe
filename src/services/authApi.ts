@@ -23,6 +23,13 @@ export const authApi = createApi({
     baseQuery: fetchBaseQuery({
         baseUrl: "http://localhost:4000/api/auth",
         credentials: "include",
+        prepareHeaders: (headers, { getState }) => {
+            const token = (getState() as any).auth?.token;
+            if (token) {
+                headers.set("Authorization", `Bearer ${token}`);
+            }
+            return headers;
+        },
     }),
     endpoints: (builder) => ({
         login: builder.mutation<LoginResponse, LoginRequest>({
@@ -39,7 +46,13 @@ export const authApi = createApi({
                 body: user,
             }),
         }),
+        logout: builder.mutation<{ message: string }, void>({
+            query: () => ({
+                url: "/logout",
+                method: "POST",
+            }),
+        }),
     }),
 });
 
-export const { useLoginMutation, useRegisterMutation } = authApi;
+export const { useLoginMutation, useRegisterMutation, useLogoutMutation } = authApi;

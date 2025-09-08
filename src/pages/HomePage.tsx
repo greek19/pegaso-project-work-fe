@@ -1,15 +1,19 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../store/store";
-import { useGetSaldoQuery, useGetUltimiMovimentiQuery } from "../services/accountApi";
+import { useGetMovimentiPaginatiQuery, useGetSaldoQuery } from "../services/accountApi";
+import MovimentiTable from "../components/MovimentiTable";
 import "../assets/style/card.css";
+import {Link} from "react-router-dom";
 
 export default function HomePage() {
     const username = useSelector((state: RootState) => state.auth.username);
     const [showSaldo, setShowSaldo] = useState(true);
 
     const { data: saldo, isLoading: saldoLoading } = useGetSaldoQuery();
-    const { data: movimenti, isLoading: movimentiLoading } = useGetUltimiMovimentiQuery(10);
+
+    const { data: movimentiResponse, isLoading: movimentiLoading } =
+        useGetMovimentiPaginatiQuery({ page: 1, pageSize: 10 });
 
     return (
         <div className="container mt-4">
@@ -33,42 +37,29 @@ export default function HomePage() {
                             onClick={() => setShowSaldo(!showSaldo)}
                             aria-label="Mostra/Nascondi saldo"
                         >
-                            <i className={`bi ${showSaldo ? "bi-eye-slash-fill" : "bi-eye-fill"} fs-3`}></i>
+                            <i
+                                className={`bi ${
+                                    showSaldo ? "bi-eye-slash-fill" : "bi-eye-fill"
+                                } fs-3`}
+                            ></i>
                         </button>
                     </div>
                 </div>
             </div>
 
+            <div className="d-flex flex-row-reverse p-2">
+                <Link to='movimenti' className='text-decoration-none'>
+                    Lista movimenti completa
+                    <i className="bi bi-arrow-right px-2" ></i>
+                </Link>
+            </div>
             <div className="card shadow-sm">
                 <div className="card-header bg-dark text-white">Ultimi movimenti</div>
                 <div className="card-body p-0">
                     {movimentiLoading ? (
                         <p className="p-3">Caricamento...</p>
                     ) : (
-                        <table className="table mb-0">
-                            <thead className="table-light">
-                            <tr>
-                                <th scope="col">Data</th>
-                                <th scope="col">Descrizione</th>
-                                <th scope="col" className="text-end">
-                                    Importo
-                                </th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {movimenti?.map((m) => (
-                                <tr key={m.id}>
-                                    <td>{m.data}</td>
-                                    <td>{m.descrizione}</td>
-                                    <td
-                                        className={`text-end ${m.importo < 0 ? "text-danger" : "text-success"}`}
-                                    >
-                                        {m.importo < 0 ? "-" : "+"}€ {Math.abs(m.importo).toFixed(2)}
-                                    </td>
-                                </tr>
-                            ))}
-                            </tbody>
-                        </table>
+                        <MovimentiTable movimenti={movimentiResponse?.contenuto ?? []} />
                     )}
                 </div>
             </div>

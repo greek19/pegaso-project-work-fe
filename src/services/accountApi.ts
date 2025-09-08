@@ -4,19 +4,26 @@ import { logout } from "../features/auth/authSlice";
 import type { RootState } from "../store/store";
 
 export interface Movimento {
-    id: number;
+    _id: string;
     data: string;
     descrizione: string;
     importo: number;
 }
 
-const rawBaseQuery = fetchBaseQuery({
+export interface PaginatedMovimentiResponse {
+    contenuto: Movimento[];
+    pagina: number;
+    totalePagine: number;
+    totaleElementi: number;
+}
+
+const baseQuery = fetchBaseQuery({
     baseUrl: "http://localhost:4000/api",
     credentials: "include",
     prepareHeaders: (headers, { getState }) => {
         const token = (getState() as RootState).auth.token;
         if (token) {
-            headers.set("authorization", `Bearer ${token}`);
+            headers.set("Authorization", `Bearer ${token}`);
         }
         return headers;
     },
@@ -27,11 +34,10 @@ const baseQueryWithAuth: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQuery
     api,
     extraOptions
 ) => {
-    const result = await rawBaseQuery(args, api, extraOptions);
+    const result = await baseQuery(args, api, extraOptions);
 
     if (result.error && result.error.status === 401) {
         api.dispatch(logout());
-
         window.location.href = "/login";
     }
 
@@ -42,11 +48,11 @@ export const accountApi = createApi({
     reducerPath: "accountApi",
     baseQuery: baseQueryWithAuth,
     endpoints: (builder) => ({
-        getSaldo: builder.query<{saldo: number}, void>({
+        getSaldo: builder.query<{ saldo: number }, void>({
             query: () => "/saldo",
         }),
-        getUltimiMovimenti: builder.query<Movimento[], number | void>({
-            query: (limit = 10) => `/movimenti?limit=${limit}`,
+        getMovimentiPaginati: builder.query<PaginatedMovimentiResponse, { page?: number; pageSize?: number }>({
+            query: ({ page = 1, pageSize = 10 }) => `/movimenti?page=${page}&pageSize=${pageSize}`,
         }),
         createBonifico: builder.mutation<void, { beneficiario: string; iban: string; importo: number; causale: string }>({
             query: (body) => ({
@@ -55,7 +61,19 @@ export const accountApi = createApi({
                 body,
             }),
         }),
+        downloadMovimentiPdf: builder.mutation<Blob, void>({
+            query: () => ({
+                url: "/movimenti/pdf",
+                method: "GET",
+                responseHandler: (response) => response.blob(),
+            }),
+        }),
     }),
 });
 
-export const { useGetSaldoQuery, useGetUltimiMovimentiQuery, useCreateBonificoMutation } = accountApi;
+export const {
+    useGetSaldoQuery,
+    useGetMovimentiPaginatiQuery,
+    useCreateBonificoMutation,
+    useDownloadMovimentiPdfMutation,
+} = accountApi;
