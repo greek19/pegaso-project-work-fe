@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { Container, Row, Col, Card, Button, Form } from "react-bootstrap";
+import BreadcrumbCustom from "../components/BreadcrumbCustom.tsx";
+import GenericModal from "../components/modals/GenericModal.tsx";
 
 const PrestitiPage = () => {
+    const [showModal, setShowModal] = useState(false);
     const [importo, setImporto] = useState(3000);
     const [durata, setDurata] = useState(12);
     const [tan, setTan] = useState(5.99);
@@ -13,6 +16,7 @@ const PrestitiPage = () => {
 
     return (
         <Container className="my-4">
+            <BreadcrumbCustom currentPage="Prestiti" />
             <h2 className="mb-4">Prestiti Personali</h2>
 
             <Card className="mb-4 shadow-sm">
@@ -70,7 +74,10 @@ const PrestitiPage = () => {
                         <strong>Rata Mensile Stimata:</strong> {calcolaRata()}€
                     </Card.Text>
 
-                    <Button variant="primary">Richiedi ora</Button>
+                    <Button
+                        variant="primary"
+                        onClick={() => setShowModal(true)}
+                    >Richiedi ora</Button>
                 </Card.Body>
             </Card>
 
@@ -100,6 +107,18 @@ const PrestitiPage = () => {
                     </Card>
                 </Col>
             </Row>
+
+            <GenericModal
+                show={showModal}
+                title="Richiedi prestito"
+                onClose={()=>setShowModal(false)}
+                onConfirm={()=>setShowModal(false)}
+                confirmText="Chiudi"
+                isPrestiti={true}
+            >
+                <p>Grazie per la tua richiesta</p>
+                <p>Verrai ricontattato da un nostro operatore specializzato.</p>
+            </GenericModal>
         </Container>
     );
 };

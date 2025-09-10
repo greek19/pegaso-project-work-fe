@@ -7,6 +7,7 @@ interface GenericModalProps {
     onConfirm?: () => void;
     confirmText?: string;
     children: React.ReactNode;
+    isPrestiti?: boolean
 }
 
 export default function GenericModal({
@@ -16,6 +17,7 @@ export default function GenericModal({
                                          onConfirm,
                                          confirmText = "Conferma",
                                          children,
+                                         isPrestiti = false,
                                      }: GenericModalProps) {
     return (
         <Modal show={show} onHide={onClose} centered>
@@ -24,9 +26,11 @@ export default function GenericModal({
             </Modal.Header>
             <Modal.Body>{children}</Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" onClick={onClose}>
-                    Annulla
-                </Button>
+                {!isPrestiti &&
+                    <Button variant="secondary" onClick={onClose}>
+                        Annulla
+                    </Button>
+                }
                 {onConfirm && (
                     <Button variant="primary" onClick={onConfirm}>
                         {confirmText}

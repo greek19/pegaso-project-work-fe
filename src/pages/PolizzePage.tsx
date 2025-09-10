@@ -8,6 +8,7 @@ import {
     Modal,
     Form,
 } from "react-bootstrap";
+import BreadcrumbCustom from "../components/BreadcrumbCustom.tsx";
 
 interface Polizza {
     id: number;
@@ -71,6 +72,8 @@ const PolizzePage = () => {
 
     return (
         <Container className="my-4">
+            <BreadcrumbCustom currentPage="Polizze" />
+
             <h2 className="mb-4">Le mie polizze</h2>
             <Row xs={1} md={2} className="g-4 mb-3">
                 {polizzeAttive.map((p) => (

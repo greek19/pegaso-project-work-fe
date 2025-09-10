@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Card, Button, Badge, Form } from "react-bootstrap";
 import GenericModal from "../components/modals/GenericModal";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import BreadcrumbCustom from "../components/BreadcrumbCustom.tsx";
 
 interface Fondo {
     id: number;
@@ -68,6 +69,8 @@ export default function FondiPage() {
 
     return (
         <div className="container mt-4">
+            <BreadcrumbCustom currentPage="Fondi di investimento" />
+
             <h2 className="mb-3">Fondi di investimento selezionati</h2>
             <p>
                 Ti presentiamo i fondi selezionati con cura dal nostro team di esperti in investimenti di Pegaso
