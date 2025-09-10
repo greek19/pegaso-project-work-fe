@@ -3,6 +3,7 @@ import { Card, Button, Badge, Form } from "react-bootstrap";
 import GenericModal from "../components/modals/GenericModal";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import BreadcrumbCustom from "../components/BreadcrumbCustom.tsx";
+import {useGetFondiQuery} from "../services/tipologicheApi.ts";
 
 interface Fondo {
     id: number;
@@ -55,6 +56,7 @@ export default function FondiPage() {
     const [showModal, setShowModal] = useState(false);
     const [selectedFondo, setSelectedFondo] = useState<Fondo | null>(null);
     const [importo, setImporto] = useState(1000);
+    const { data: fondi } = useGetFondiQuery();
 
     const handleOpenModal = (fondo: Fondo) => {
         setSelectedFondo(fondo);
@@ -78,7 +80,7 @@ export default function FondiPage() {
             </p>
 
             <div className="row g-4">
-                {mockFondi.map((fondo) => (
+                {fondi?.map((fondo) => (
                     <div key={fondo.id} className="col-md-4">
                         <Card className="h-100 shadow-sm">
                             <Card.Body className="d-flex flex-column justify-content-between">
