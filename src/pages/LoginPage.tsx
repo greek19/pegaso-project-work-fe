@@ -1,77 +1,142 @@
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
+import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { login } from "../features/auth/authSlice";
+import { loginSuccess } from "../features/auth/authSlice";
 import { useNavigate } from "react-router-dom";
-
-interface LoginFormInputs {
-    username: string;
-    password: string;
-}
-
-const schema = yup.object().shape({
-    username: yup.string().required("Username obbligatorio"),
-    password: yup.string().required("Password obbligatoria"),
-});
+import { useLoginMutation, useRegisterMutation } from "../services/authApi";
+import { Spinner, Form, Button, Card, Nav } from "react-bootstrap";
 
 export default function LoginPage() {
+    const [mode, setMode] = useState<"login" | "register">("login");
+
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+
+    const [login, { isLoading: loginLoading }] = useLoginMutation();
+    const [register, { isLoading: registerLoading }] = useRegisterMutation();
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-    } = useForm<LoginFormInputs>({
-        resolver: yupResolver(schema),
-    });
+    const handleLogin = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            const data = await login({ username, password }).unwrap();
+            dispatch(loginSuccess({ token: data.token, username }));
+            navigate("/");
+        } catch {
+            alert("Credenziali non valide");
+        }
+    };
 
-    const onSubmit = (data: LoginFormInputs) => {
-        // Qui simuliamo il login: in futuro chiamerai l'API
-        dispatch(login({ token: "fakeToken123", user: data.username }));
-        navigate("/");
+    const handleRegister = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (password !== confirmPassword) {
+            alert("Le password non coincidono");
+            return;
+        }
+        try {
+            await register({ username, password }).unwrap();
+            alert("Registrazione avvenuta con successo, effettua il login!");
+            setMode("login");
+        } catch {
+            alert("Errore durante la registrazione");
+        }
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100">
-            <form
-                onSubmit={handleSubmit(onSubmit)}
-                className="bg-white p-6 rounded-xl shadow-lg w-96"
-            >
-                <h2 className="text-2xl font-bold mb-4 text-center">Login</h2>
+        <div className="d-flex justify-content-center align-items-center vh-100 bg-light">
+            <Card className="shadow-lg" style={{ width: "28rem" }}>
+                <Card.Body>
+                    <h3 className="text-center mb-4">Benvenuto in MyBank</h3>
 
-                <div className="mb-4">
-                    <label className="block mb-1 font-medium">Username</label>
-                    <input
-                        type="text"
-                        {...register("username")}
-                        className="w-full px-3 py-2 border rounded-lg focus:ring focus:ring-blue-200"
-                    />
-                    {errors.username && (
-                        <p className="text-red-500 text-sm mt-1">{errors.username.message}</p>
+                    <Nav fill variant="tabs" activeKey={mode} className="mb-4">
+                        <Nav.Item>
+                            <Nav.Link eventKey="login" onClick={() => setMode("login")}>
+                                Login
+                            </Nav.Link>
+                        </Nav.Item>
+                        <Nav.Item>
+                            <Nav.Link eventKey="register" onClick={() => setMode("register")}>
+                                Registrati
+                            </Nav.Link>
+                        </Nav.Item>
+                    </Nav>
+
+                    {mode === "login" ? (
+                        <Form onSubmit={handleLogin}>
+                            <Form.Group className="mb-3">
+                                <Form.Label>Username</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    value={username}
+                                    onChange={(e) => setUsername(e.target.value)}
+                                    placeholder="Inserisci il tuo username"
+                                    required
+                                />
+                            </Form.Group>
+
+                            <Form.Group className="mb-3">
+                                <Form.Label>Password</Form.Label>
+                                <Form.Control
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    placeholder="Inserisci la tua password"
+                                    required
+                                />
+                            </Form.Group>
+
+                            <div className="d-grid">
+                                <Button type="submit" variant="primary" disabled={loginLoading}>
+                                    {loginLoading ? <Spinner size="sm" animation="border" /> : "Login"}
+                                </Button>
+                            </div>
+                        </Form>
+                    ) : (
+                        <Form onSubmit={handleRegister}>
+                            <Form.Group className="mb-3">
+                                <Form.Label>Username</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    value={username}
+                                    onChange={(e) => setUsername(e.target.value)}
+                                    placeholder="Scegli un username"
+                                    required
+                                />
+                            </Form.Group>
+
+                            <Form.Group className="mb-3">
+                                <Form.Label>Password</Form.Label>
+                                <Form.Control
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    placeholder="Scegli una password"
+                                    required
+                                />
+                            </Form.Group>
+
+                            <Form.Group className="mb-3">
+                                <Form.Label>Conferma Password</Form.Label>
+                                <Form.Control
+                                    type="password"
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    placeholder="Ripeti la password"
+                                    required
+                                />
+                            </Form.Group>
+
+                            <div className="d-grid">
+                                <Button type="submit" variant="success" disabled={registerLoading}>
+                                    {registerLoading ? <Spinner size="sm" animation="border" /> : "Registrati"}
+                                </Button>
+                            </div>
+                        </Form>
                     )}
-                </div>
-
-                <div className="mb-4">
-                    <label className="block mb-1 font-medium">Password</label>
-                    <input
-                        type="password"
-                        {...register("password")}
-                        className="w-full px-3 py-2 border rounded-lg focus:ring focus:ring-blue-200"
-                    />
-                    {errors.password && (
-                        <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
-                    )}
-                </div>
-
-                <button
-                    type="submit"
-                    className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
-                >
-                    Accedi
-                </button>
-            </form>
+                </Card.Body>
+            </Card>
         </div>
     );
 }

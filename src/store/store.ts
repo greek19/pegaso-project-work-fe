@@ -1,17 +1,24 @@
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
-import { combineReducers } from 'redux';
 import authReducer from '../features/auth/authSlice';
+import { authApi } from '../services/authApi';
+import { accountApi } from '../services/accountApi';
+import {tipologicheApi} from "../services/tipologicheApi.ts";
+import {polizzeApi} from "../services/polizzeApi.ts";
 
 const persistConfig = {
     key: 'root',
     storage,
-    whitelist: ['auth']
+    whitelist: ['auth'],
 };
 
 const rootReducer = combineReducers({
-    auth: authReducer
+    auth: authReducer,
+    [authApi.reducerPath]: authApi.reducer,
+    [accountApi.reducerPath]: accountApi.reducer,
+    [tipologicheApi.reducerPath]: tipologicheApi.reducer,
+    [polizzeApi.reducerPath]: polizzeApi.reducer
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -19,9 +26,11 @@ const persistedReducer = persistReducer(persistConfig, rootReducer);
 export const store = configureStore({
     reducer: persistedReducer,
     middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware({
-            serializableCheck: false,
-        }),
+        getDefaultMiddleware({ serializableCheck: false })
+            .concat(authApi.middleware)
+            .concat(accountApi.middleware)
+            .concat(tipologicheApi.middleware)
+            .concat(polizzeApi.middleware),
 });
 
 export const persistor = persistStore(store);
