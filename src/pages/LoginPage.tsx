@@ -7,16 +7,13 @@ import { Spinner, Form, Button, Card, Nav } from "react-bootstrap";
 
 export default function LoginPage() {
     const [mode, setMode] = useState<"login" | "register">("login");
-
+    const [confirmPassword, setConfirmPassword] = useState("");
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
-
-    const [login, { isLoading: loginLoading }] = useLoginMutation();
-    const [register, { isLoading: registerLoading }] = useRegisterMutation();
-
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const [register, { isLoading: registerLoading }] = useRegisterMutation();
+    const [login, { isLoading: loginLoading }] = useLoginMutation();
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();

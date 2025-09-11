@@ -1,30 +1,20 @@
 import { useState, useMemo } from "react";
 import { Container, Row, Col, Card, Button, Modal, Form } from "react-bootstrap";
 import BreadcrumbCustom from "../components/BreadcrumbCustom.tsx";
-import { useGetPolizzeUtenteQuery, useAggiungiPolizzaMutation } from "../services/polizzeApi.ts";
+import {
+    useGetPolizzeUtenteQuery,
+    useAggiungiPolizzaMutation,
+    useRimuoviPolizzaMutation
+} from "../services/polizzeApi.ts";
 
 const PolizzePage = () => {
-    const { data, isLoading, isError, refetch } = useGetPolizzeUtenteQuery();
-    const [aggiungiPolizza, { isLoading: isAdding }] = useAggiungiPolizzaMutation();
-
+    const [selectedPolizza, setSelectedPolizza] = useState<any>(null);
     const [filtroTipo, setFiltroTipo] = useState<string>("Tutte");
     const [ordinamento, setOrdinamento] = useState<string>("asc");
     const [showModal, setShowModal] = useState(false);
-    const [selectedPolizza, setSelectedPolizza] = useState<any>(null);
-
-    const handleAggiungi = async (polizzaId: string) => {
-        try {
-            await aggiungiPolizza({ polizzaId }).unwrap();
-            refetch();
-        } catch (err) {
-            console.error("Errore aggiungendo polizza:", err);
-        }
-    };
-
-    const handleOpenModal = (polizza: any) => {
-        setSelectedPolizza(polizza);
-        setShowModal(true);
-    };
+    const [aggiungiPolizza, { isLoading: isAdding }] = useAggiungiPolizzaMutation();
+    const { data, isLoading, isError, refetch } = useGetPolizzeUtenteQuery();
+    const [rimuoviPolizza] = useRimuoviPolizzaMutation();
 
     const costoTotale = useMemo(
         () => data?.polizzeAttive.reduce((acc, p) => acc + p.costoMensile, 0) || 0,
@@ -37,6 +27,31 @@ const PolizzePage = () => {
         result.sort((a, b) => (ordinamento === "asc" ? a.costoMensile - b.costoMensile : b.costoMensile - a.costoMensile));
         return result;
     }, [data, filtroTipo, ordinamento]);
+
+    const handleAggiungi = async (polizzaId: string) => {
+        try {
+            await aggiungiPolizza({ polizzaId }).unwrap();
+            refetch();
+        } catch (err) {
+            console.error("Errore aggiungendo polizza:", err);
+        }
+
+    };
+    const handleRemove = async (id: string) => {
+        try {
+            await rimuoviPolizza({ polizzaId: id }).unwrap();
+            refetch();
+            alert("Polizza rimossa con successo!");
+        } catch (err) {
+            alert("Errore nella rimozione della polizza");
+        }
+
+    };
+
+    const handleOpenModal = (polizza: any) => {
+        setSelectedPolizza(polizza);
+        setShowModal(true);
+    };
 
     if (isLoading) return <p>Caricamento...</p>;
     if (isError) return <p>Errore nel recupero delle polizze</p>;
@@ -56,6 +71,13 @@ const PolizzePage = () => {
                                     <Card.Text>{p.tipo}</Card.Text>
                                     <Card.Text><strong>Costo mensile:</strong> € {p.costoMensile}</Card.Text>
                                 </div>
+                                <Button
+                                    variant="danger"
+                                    className="mt-2"
+                                    onClick={() => handleRemove(p._id)}
+                                >
+                                    Rimuovi
+                                </Button>
                             </Card.Body>
                         </Card>
                     </Col>
@@ -95,7 +117,7 @@ const PolizzePage = () => {
                                     <Card.Text>{p.tipo}</Card.Text>
                                     <Card.Text><strong>Costo mensile:</strong> € {p.costoMensile}</Card.Text>
                                 </div>
-                                <Button variant="success" disabled={isAdding} onClick={() => handleAggiungi(p._id)}>
+                                <Button variant="primary" disabled={isAdding} onClick={() => handleAggiungi(p._id)}>
                                     Aggiungi
                                 </Button>
                             </Card.Body>
@@ -111,7 +133,7 @@ const PolizzePage = () => {
                 <Modal.Body>
                     <p>{selectedPolizza?.tipo}</p>
                     <p><strong>Costo mensile:</strong> € {selectedPolizza?.costoMensile}</p>
-                    <p>Descrizione estesa della polizza, coperture, esclusioni e vantaggi.</p>
+                    <p>{selectedPolizza?.descrizione}</p>
                 </Modal.Body>
                 <Modal.Footer>
                     <Button variant="secondary" onClick={() => setShowModal(false)}>Chiudi</Button>

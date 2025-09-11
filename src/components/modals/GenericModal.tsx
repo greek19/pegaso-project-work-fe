@@ -19,6 +19,7 @@ export default function GenericModal({
                                          children,
                                          isPrestiti = false,
                                      }: GenericModalProps) {
+
     return (
         <Modal show={show} onHide={onClose} centered>
             <Modal.Header closeButton>

@@ -9,9 +9,7 @@ import {Link} from "react-router-dom";
 export default function HomePage() {
     const username = useSelector((state: RootState) => state.auth.username);
     const [showSaldo, setShowSaldo] = useState(true);
-
     const { data: saldo, isLoading: saldoLoading } = useGetSaldoQuery();
-
     const { data: movimentiResponse, isLoading: movimentiLoading } =
         useGetMovimentiPaginatiQuery({ page: 1, pageSize: 10 });
 

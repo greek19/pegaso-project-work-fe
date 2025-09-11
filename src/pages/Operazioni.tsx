@@ -3,33 +3,15 @@ import GenericModal from "../components/modals/GenericModal";
 import { Button } from "react-bootstrap";
 import { useCreateBonificoMutation } from "../services/accountApi";
 import { useNavigate } from "react-router-dom";
-
-type ModalField =
-    | { label: string; type: "text"; state: string; setState: React.Dispatch<React.SetStateAction<string>> }
-    | { label: string; type: "number"; state: number; setState: React.Dispatch<React.SetStateAction<number>> };
-
-interface Operazione {
-    title: string;
-    description: string;
-    modalFields?: ModalField[];
-    action?: () => void;
-    show?: boolean;
-    setShow?: React.Dispatch<React.SetStateAction<boolean>>;
-    confirmText?: string;
-    isRedirect?: boolean;
-    redirectTo?: string;
-}
+import type {Operazione} from "../model/Operazione.ts";
 
 export default function Operazioni() {
     const navigate = useNavigate();
-
     const [showBonifico, setShowBonifico] = useState(false);
-
     const [beneficiario, setBeneficiario] = useState("");
-    const [iban, setIban] = useState("");
-    const [importo, setImporto] = useState(0);
     const [causale, setCausale] = useState("");
-
+    const [importo, setImporto] = useState(0);
+    const [iban, setIban] = useState("");
     const [createBonifico] = useCreateBonificoMutation();
 
     const handleBonifico = async () => {
@@ -41,7 +23,6 @@ export default function Operazioni() {
             alert("Errore durante il bonifico");
         }
     };
-
 
     const operazioni: Operazione[] = [
         {

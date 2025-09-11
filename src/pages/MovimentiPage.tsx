@@ -3,18 +3,17 @@ import {useState} from "react";
 import CustomPagination from "../components/CustomPagination";
 import MovimentiTable from "../components/MovimentiTable";
 import {useDownloadMovimentiPdfMutation, useGetMovimentiPaginatiQuery} from "../services/accountApi.ts";
+import {ELEMENTI_PER_PAGINA} from "../utility/constants.ts";
 
 const MovimentiPage = () => {
-    const [paginaCorrente, setPaginaCorrente] = useState(1);
     const [downloadError, setDownloadError] = useState<string | null>(null);
-    const elementiPerPagina = 10;
-
+    const [paginaCorrente, setPaginaCorrente] = useState(1);
+    const [downloadPdf, {isLoading}] = useDownloadMovimentiPdfMutation();
     const {data, isError} = useGetMovimentiPaginatiQuery({
         page: paginaCorrente,
-        pageSize: elementiPerPagina,
+        pageSize: ELEMENTI_PER_PAGINA,
     });
 
-    const [downloadPdf, {isLoading}] = useDownloadMovimentiPdfMutation();
     const handleDownloadPdf = async () => {
         try {
             setDownloadError(null);
