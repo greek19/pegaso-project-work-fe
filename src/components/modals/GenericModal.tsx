@@ -1,5 +1,4 @@
 import { Modal, Button } from "react-bootstrap";
-import React from "react";
 
 interface GenericModalProps {
     show: boolean;
@@ -7,34 +6,32 @@ interface GenericModalProps {
     onClose: () => void;
     onConfirm?: () => void;
     confirmText?: string;
-    children?: React.ReactNode;
-    hideCancelButton?: boolean;
+    children: React.ReactNode;
+    isPrestiti?: boolean
 }
 
-const GenericModal: React.FC<GenericModalProps> = ({
-       show,
-       title,
-       onClose,
-       onConfirm,
-       confirmText = "Conferma",
-       children,
-       hideCancelButton = false,
-   }) => {
+export default function GenericModal({
+                                         show,
+                                         title,
+                                         onClose,
+                                         onConfirm,
+                                         confirmText = "Conferma",
+                                         children,
+                                         isPrestiti = false,
+                                     }: GenericModalProps) {
 
     return (
         <Modal show={show} onHide={onClose} centered>
             <Modal.Header closeButton>
                 <Modal.Title>{title}</Modal.Title>
             </Modal.Header>
-
             <Modal.Body>{children}</Modal.Body>
-
             <Modal.Footer>
-                {!hideCancelButton && (
+                {!isPrestiti &&
                     <Button variant="secondary" onClick={onClose}>
                         Annulla
                     </Button>
-                )}
+                }
                 {onConfirm && (
                     <Button variant="primary" onClick={onConfirm}>
                         {confirmText}
@@ -43,6 +40,4 @@ const GenericModal: React.FC<GenericModalProps> = ({
             </Modal.Footer>
         </Modal>
     );
-};
-
-export default GenericModal;
+}

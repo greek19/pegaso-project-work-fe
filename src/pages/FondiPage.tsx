@@ -4,21 +4,11 @@ import GenericModal from "../components/modals/GenericModal";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import BreadcrumbCustom from "../components/BreadcrumbCustom.tsx";
 import {useGetFondiQuery} from "../services/tipologicheApi.ts";
-
-interface Fondo {
-    id: number;
-    nome: string;
-    descrizione: string;
-    tipoAttivo: string;
-    rendimento1anno: number;
-    investimentoMinimo: number;
-    sfdrLevel: number;
-    performance: number[];
-}
+import type {Fondo} from "../model/Fondo.ts";
 
 export default function FondiPage() {
-    const [showModal, setShowModal] = useState(false);
     const [selectedFondo, setSelectedFondo] = useState<Fondo | null>(null);
+    const [showModal, setShowModal] = useState(false);
     const [importo, setImporto] = useState(1000);
     const { data: fondi } = useGetFondiQuery();
 

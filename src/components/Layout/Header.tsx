@@ -4,9 +4,9 @@ import {useLogoutMutation} from "../../services/authApi.ts";
 import { logout as logoutAction } from "../../features/auth/authSlice";
 
 export default function Header() {
-    const [logoutApi] = useLogoutMutation();
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const [logoutApi] = useLogoutMutation();
 
     const handleLogout = async () => {
         try {

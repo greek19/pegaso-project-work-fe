@@ -2,27 +2,11 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type { BaseQueryFn, FetchArgs, FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { logout } from "../features/auth/authSlice";
 import type { RootState } from "../store/store";
-
-export interface Fondo {
-    id: number;
-    nome: string;
-    descrizione: string;
-    tipoAttivo: string;
-    rendimento1anno: number;
-    investimentoMinimo: number;
-    sfdrLevel: number;
-    performance: number[];
-}
-
-export interface Polizza {
-    id: number;
-    nome: string;
-    tipo: string;
-    costoMensile: number;
-}
+import type {Fondo} from "../model/Fondo.ts";
+import type {Polizza} from "../model/Polizza.ts";
 
 const baseQuery = fetchBaseQuery({
-    baseUrl: "http://localhost:4000/api",
+    baseUrl: import.meta.env.VITE_BASE_URL_BE,
     credentials: "include",
     prepareHeaders: (headers, { getState }) => {
         const token = (getState() as RootState).auth.token;

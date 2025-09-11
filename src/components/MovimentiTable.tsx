@@ -1,5 +1,5 @@
 import { Table } from "react-bootstrap";
-import type { Movimento } from "../services/accountApi";
+import type {Movimento} from "../model/Movimento.ts";
 
 interface MovimentiTableProps {
     movimenti: Movimento[];

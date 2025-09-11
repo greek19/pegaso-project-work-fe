@@ -1,27 +1,10 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-
-interface LoginRequest {
-    username: string;
-    password: string;
-}
-
-interface LoginResponse {
-    token: string;
-}
-
-interface RegisterRequest {
-    username: string;
-    password: string;
-}
-
-interface RegisterResponse {
-    message: string;
-}
+import type {LoginRequest, LoginResponse, RegisterRequest, RegisterResponse} from "../model/Auth.ts";
 
 export const authApi = createApi({
     reducerPath: "authApi",
     baseQuery: fetchBaseQuery({
-        baseUrl: "http://localhost:4000/api/auth",
+        baseUrl: import.meta.env.VITE_BASE_URL_BE + "/auth",
         credentials: "include",
         prepareHeaders: (headers, { getState }) => {
             const token = (getState() as any).auth?.token;

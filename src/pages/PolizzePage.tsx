@@ -8,38 +8,13 @@ import {
 } from "../services/polizzeApi.ts";
 
 const PolizzePage = () => {
-    const { data, isLoading, isError, refetch } = useGetPolizzeUtenteQuery();
-    const [aggiungiPolizza, { isLoading: isAdding }] = useAggiungiPolizzaMutation();
-    const [rimuoviPolizza] = useRimuoviPolizzaMutation();
-
+    const [selectedPolizza, setSelectedPolizza] = useState<any>(null);
     const [filtroTipo, setFiltroTipo] = useState<string>("Tutte");
     const [ordinamento, setOrdinamento] = useState<string>("asc");
     const [showModal, setShowModal] = useState(false);
-    const [selectedPolizza, setSelectedPolizza] = useState<any>(null);
-
-    const handleAggiungi = async (polizzaId: string) => {
-        try {
-            await aggiungiPolizza({ polizzaId }).unwrap();
-            refetch();
-        } catch (err) {
-            console.error("Errore aggiungendo polizza:", err);
-        }
-    };
-
-    const handleRemove = async (id: string) => {
-        try {
-            await rimuoviPolizza({ polizzaId: id }).unwrap();
-            refetch();
-            alert("Polizza rimossa con successo!");
-        } catch (err) {
-            alert("Errore nella rimozione della polizza");
-        }
-    };
-
-    const handleOpenModal = (polizza: any) => {
-        setSelectedPolizza(polizza);
-        setShowModal(true);
-    };
+    const [aggiungiPolizza, { isLoading: isAdding }] = useAggiungiPolizzaMutation();
+    const { data, isLoading, isError, refetch } = useGetPolizzeUtenteQuery();
+    const [rimuoviPolizza] = useRimuoviPolizzaMutation();
 
     const costoTotale = useMemo(
         () => data?.polizzeAttive.reduce((acc, p) => acc + p.costoMensile, 0) || 0,
@@ -52,6 +27,31 @@ const PolizzePage = () => {
         result.sort((a, b) => (ordinamento === "asc" ? a.costoMensile - b.costoMensile : b.costoMensile - a.costoMensile));
         return result;
     }, [data, filtroTipo, ordinamento]);
+
+    const handleAggiungi = async (polizzaId: string) => {
+        try {
+            await aggiungiPolizza({ polizzaId }).unwrap();
+            refetch();
+        } catch (err) {
+            console.error("Errore aggiungendo polizza:", err);
+        }
+
+    };
+    const handleRemove = async (id: string) => {
+        try {
+            await rimuoviPolizza({ polizzaId: id }).unwrap();
+            refetch();
+            alert("Polizza rimossa con successo!");
+        } catch (err) {
+            alert("Errore nella rimozione della polizza");
+        }
+
+    };
+
+    const handleOpenModal = (polizza: any) => {
+        setSelectedPolizza(polizza);
+        setShowModal(true);
+    };
 
     if (isLoading) return <p>Caricamento...</p>;
     if (isError) return <p>Errore nel recupero delle polizze</p>;

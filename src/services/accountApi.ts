@@ -2,23 +2,10 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type { BaseQueryFn, FetchArgs, FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { logout } from "../features/auth/authSlice";
 import type { RootState } from "../store/store";
-
-export interface Movimento {
-    _id: string;
-    data: string;
-    descrizione: string;
-    importo: number;
-}
-
-export interface PaginatedMovimentiResponse {
-    contenuto: Movimento[];
-    pagina: number;
-    totalePagine: number;
-    totaleElementi: number;
-}
+import type {PaginatedMovimentiResponse} from "../model/Movimento.ts";
 
 const baseQuery = fetchBaseQuery({
-    baseUrl: "http://localhost:4000/api",
+    baseUrl: import.meta.env.VITE_BASE_URL_BE,
     credentials: "include",
     prepareHeaders: (headers, { getState }) => {
         const token = (getState() as RootState).auth.token;

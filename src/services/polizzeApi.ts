@@ -2,22 +2,10 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type { BaseQueryFn, FetchArgs, FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import { logout } from "../features/auth/authSlice";
 import type { RootState } from "../store/store";
-
-export interface Polizza {
-    _id: string;
-    nome: string;
-    tipo: string;
-    costoMensile: number;
-    descrizione: string;
-}
-
-export interface PolizzeUtenteResponse {
-    polizzeAttive: Polizza[];
-    polizzeDisponibili: Polizza[];
-}
+import type {Polizza, PolizzeUtenteResponse} from "../model/Polizza.ts";
 
 const baseQuery = fetchBaseQuery({
-    baseUrl: "http://localhost:4000/api/polizze",
+    baseUrl: import.meta.env.VITE_BASE_URL_BE + "/polizze",
     credentials: "include",
     prepareHeaders: (headers, { getState }) => {
         const token = (getState() as RootState).auth.token;
