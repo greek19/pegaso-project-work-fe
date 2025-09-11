@@ -8,6 +8,7 @@ export interface Polizza {
     nome: string;
     tipo: string;
     costoMensile: number;
+    descrizione: string;
 }
 
 export interface PolizzeUtenteResponse {
@@ -52,10 +53,17 @@ export const polizzeApi = createApi({
                 body: { polizzaId },
             }),
         }),
+        rimuoviPolizza: builder.mutation<{ message: string }, { polizzaId: string }>({
+            query: ({ polizzaId }) => ({
+                url: `/rimuovi/${polizzaId}`,
+                method: "DELETE",
+            }),
+        }),
     }),
 });
 
 export const {
     useGetPolizzeUtenteQuery,
-    useAggiungiPolizzaMutation
+    useAggiungiPolizzaMutation,
+    useRimuoviPolizzaMutation
 } = polizzeApi;

@@ -16,42 +16,6 @@ interface Fondo {
     performance: number[];
 }
 
-const mockFondi: Fondo[] = [
-    {
-        id: 1,
-        nome: "Amundi Funds - Global Aggregate Bond",
-        descrizione:
-            "Fondo flessibile con focus globale. Puoi investire in governi, credito di alta qualità, alto rendimento, mercati emergenti e valute. Mantiene un portafoglio diversificato per ottimizzare il rendimento.",
-        tipoAttivo: "Reddito fisso",
-        rendimento1anno: 3.16,
-        investimentoMinimo: 0,
-        sfdrLevel: 8,
-        performance: [10000, 10316, 10650, 11000, 11400],
-    },
-    {
-        id: 2,
-        nome: "Pegaso Growth Fund",
-        descrizione:
-            "Fondo azionario globale con alto potenziale di crescita. Investimento orientato al lungo termine per accumulare capitale in mercati azionari internazionali.",
-        tipoAttivo: "Azionario",
-        rendimento1anno: 7.8,
-        investimentoMinimo: 500,
-        sfdrLevel: 7,
-        performance: [10000, 10780, 11600, 12500, 13500],
-    },
-    {
-        id: 3,
-        nome: "Pegaso Balanced Fund",
-        descrizione:
-            "Fondo bilanciato azioni/obbligazioni con rischio moderato. Adatto a chi cerca un equilibrio tra crescita e sicurezza del capitale.",
-        tipoAttivo: "Bilanciato",
-        rendimento1anno: 5.2,
-        investimentoMinimo: 200,
-        sfdrLevel: 6,
-        performance: [10000, 10520, 11050, 11600, 12200],
-    },
-];
-
 export default function FondiPage() {
     const [showModal, setShowModal] = useState(false);
     const [selectedFondo, setSelectedFondo] = useState<Fondo | null>(null);

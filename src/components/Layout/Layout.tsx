@@ -11,7 +11,7 @@ export default function Layout() {
             </main>
 
             <footer style={{ background: "#f1f1f1", padding: "1rem", textAlign: "center" }}>
-                <p>© {new Date().getFullYear()} My App</p>
+                <p>© {new Date().getFullYear()} {import.meta.env.VITE_TITLE}</p>
             </footer>
         </div>
     );
